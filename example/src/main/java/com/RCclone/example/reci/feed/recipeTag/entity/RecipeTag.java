@@ -1,17 +1,13 @@
 package com.RCclone.example.reci.feed.recipeTag.entity;
 
-import com.RecipeCode.teamproject.common.BaseTimeEntity;
-import com.RecipeCode.teamproject.reci.feed.recipes.entity.Recipes;
-import com.RecipeCode.teamproject.reci.tag.entity.Tag;
+import com.RCclone.example.common.BaseTimeEntity;
+import com.RCclone.example.reci.feed.recipes.entity.Recipes;
+import com.RCclone.example.reci.tag.entity.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "RECIPE_TAG")
-@SequenceGenerator(
-        name = "RECIPE_TAG_JPA",
-        sequenceName = "RECIPE_TAG_KEY",
-        allocationSize = 1)
+@Table(name = "recipe_tag")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,8 +16,7 @@ import lombok.*;
 @EqualsAndHashCode(of = "recipeTagId", callSuper = false)
 public class RecipeTag extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "RECIPE_TAG_JPA")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recipeTagId;               //pk
 
     @ManyToOne(fetch = FetchType.LAZY)

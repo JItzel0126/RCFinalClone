@@ -1,6 +1,6 @@
 package com.RCclone.example.reci.tag.entity;
 
-import com.RecipeCode.teamproject.common.BaseTimeEntity;
+import com.RCclone.example.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,18 +10,13 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "TAG")
-@SequenceGenerator(name = "TAG_KEY_JPA",
-                   sequenceName = "TAG_KEY",
-                   initialValue = 1,
-                   allocationSize = 1)
+@Table(name = "tag")
 @EqualsAndHashCode(of = "tagId", callSuper = false)
 public class Tag extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-    generator = "TAG_KEY_JPA")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;             // PK
-
     private String tag;
+    boolean deleted=false;
 }

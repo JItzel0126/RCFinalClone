@@ -1,0 +1,61 @@
+package com.RCclone.example.reci.feed.ingredient.service;
+
+import com.RCclone.example.common.ErrorMsg;
+import com.RCclone.example.common.RecipeMapStruct;
+import com.RCclone.example.reci.feed.ingredient.dto.IngredientDto;
+import com.RCclone.example.reci.feed.ingredient.entity.Ingredient;
+import com.RCclone.example.reci.feed.ingredient.repository.IngredientRepository;
+import com.RCclone.example.reci.feed.recipes.entity.Recipes;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class IngredientService {
+    private final IngredientRepository ingredientRepository;
+    private final RecipeMapStruct mapStruct;
+    private final ErrorMsg errorMsg;
+
+//    상세조회
+    public List<IngredientDto> getIngredients(String recipesUuid) {
+        List<Ingredient> ingredients = ingredientRepository
+                .findByRecipesUuidAndDeletedFalseOrderBySortOrderAsc(recipesUuid);
+
+        if (ingredients.isEmpty()) {
+            throw new RuntimeException(errorMsg.getMessage("errors.not.found"));
+        }
+
+        return mapStruct.toIngredientDtoList(ingredients);
+    }
+
+//    저장(레시피와 함께 저장)
+    public void saveAll(List<IngredientDto> ingredientDtos,
+                        Recipes recipe) {
+        for (int i = 0; i < ingredientDtos.size(); i++) {
+        Ingredient ingredient = mapStruct.toIngredientEntity(ingredientDtos.get(i));
+
+            ingredient.setSortOrder((i+1L)*10);      // 10 단위로 자동 부여
+            ingredient.setRecipes(recipe);           // 레시피 연관 관계
+
+            ingredientRepository.save(ingredient);
+        }
+    }
+
+//    수정 (재료명/분량만 수정)
+    public void updateIngredient(IngredientDto ingredientDto) {
+        Ingredient ingredient = ingredientRepository.findById(ingredientDto.getId())
+                .orElseThrow(()->new RuntimeException(errorMsg.getMessage("errors.not.found")));
+
+        mapStruct.updateIngredient(ingredientDto, ingredient);
+    }
+
+//    삭제(논리삭제)
+    public void ingredientLogicalDelete(Long id) {
+        Ingredient ingredient = ingredientRepository.findById(id)
+                .orElseThrow(()->new RuntimeException(errorMsg.getMessage("errors.not.found")));
+        ingredient.setDeleted(true);
+        ingredient.setIngredientAmount(null); // 분량 제거
+    }
+}
