@@ -127,7 +127,7 @@ public interface RecipeMapStruct {
     List<RecipeContent> toRecipeContentEntityList(List<RecipeContentDto> dtos);
 
     // Dirty Checking용 업데이트
-    @Mapping(target = "recipes", ignore = true)
-    @Mapping(target = "recipeImage", ignore = true)
-    void updateRecipeContent(RecipeContentDto dto, @MappingTarget RecipeContent entity);
+//    @Mapping(target = "recipes", ignore = true)
+//    @Mapping(target = "recipeImage", ignore = true)
+//    void updateRecipeContent(RecipeContentDto dto, @MappingTarget RecipeContent entity);
 }
