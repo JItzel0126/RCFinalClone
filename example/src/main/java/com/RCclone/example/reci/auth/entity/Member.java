@@ -1,13 +1,14 @@
 package com.RCclone.example.reci.auth.entity;
 
-import com.RecipeCode.teamproject.common.BaseTimeEntity;
+
+import com.RCclone.example.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name="USERS")
+@Table(name="users")
 @Getter
 @Setter
 @NoArgsConstructor

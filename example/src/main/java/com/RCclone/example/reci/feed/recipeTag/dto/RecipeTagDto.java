@@ -20,15 +20,5 @@ public class RecipeTagDto {
         this.tagId = tagId;
     }
 
-//    조회용
-    public RecipeTagDto(Long recipeTagId,
-                        String recipeUuid,
-                        Long tagId,
-                        String tagName) {
-        this.recipeTagId = recipeTagId;
-        this.recipeUuid = recipeUuid;
-        this.tagId = tagId;
-        this.tagName = tagName;
-    }
 
 }

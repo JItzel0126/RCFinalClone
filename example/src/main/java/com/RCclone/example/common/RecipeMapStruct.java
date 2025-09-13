@@ -35,7 +35,6 @@ public interface RecipeMapStruct {
     IngredientDto toIngredientDto(Ingredient entity);
 
     // 더티체킹
-    @Mapping(target = "recipesUuid", ignore = true)
     void updateIngredient(IngredientDto ingredientDto, @MappingTarget Ingredient ingredient);
 
     // 리스트 변환
@@ -74,7 +73,7 @@ public interface RecipeMapStruct {
 
     // Dirty Checking (태그명은 Tag 엔티티에서만 변경되므로 여기선 주로 연결관계 업데이트)
     @Mapping(target = "recipes", ignore = true)
-    @Mapping(target = "tag", ignore = true)
+//    @Mapping(target = "tag", ignore = true)
     void updateRecipeTag(RecipeTagDto dto, @MappingTarget RecipeTag entity);
 
 
@@ -98,7 +97,7 @@ public interface RecipeMapStruct {
 
     @Mapping(source = "userEmail", target = "member.userEmail")
     @Mapping(target = "thumbnail", ignore = true)   // 썸네일은 Service 단에서 처리
-    @Mapping(source = "tags", target = "recipeTag")   // 태그 연결은 RecipeTagService에서 처리
+    @Mapping(target = "recipeTag", ignore = true)   // 태그 연결은 RecipeTagService에서 처리
     Recipes toRecipeEntity(RecipesDto dto);
 
     List<Recipes> toRecipeEntityList(List<RecipesDto> recipesDtos);

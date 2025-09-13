@@ -43,6 +43,12 @@ public class IngredientService {
         }
     }
 
+//    전체교체용?
+    public void replaceAll(List<IngredientDto> ingredientDtos, Recipes recipe) {
+        ingredientRepository.deleteByRecipesUuid(recipe.getUuid());
+        saveAll(ingredientDtos, recipe);
+    }
+
 //    수정 (재료명/분량만 수정)
     public void updateIngredient(IngredientDto ingredientDto) {
         Ingredient ingredient = ingredientRepository.findById(ingredientDto.getId())

@@ -37,13 +37,35 @@ public class RecipeTagService {
             RecipeTag recipeTag = new RecipeTag();
             recipeTag.setRecipes(recipe);
             recipeTag.setTag(tag);
+
+            // 양방향 동기화
+            recipe.getRecipeTag().add(recipeTag);
             recipeTagRepository.save(recipeTag);
         }
     }
+    // 전체 교체
+    public void replaceTagsForRecipe(List<TagDto> tagDtos, Recipes recipe) {
+        // 기존 연결 모두 제거
+        recipeTagRepository.deleteByRecipesUuid(recipe.getUuid());
+        recipe.getRecipeTag().clear(); // 양방향 컬렉션도 깨끗이
 
-//    레시피별 태그 조회
+        // 새로 연결
+        for (TagDto dto : tagDtos) {
+            Tag tag = tagService.saveOrGetTag(dto.getTag()); // 존재하면 재사용, 없으면 생성
+            RecipeTag link = new RecipeTag();
+            link.setRecipes(recipe);
+            link.setTag(tag);
+            recipeTagRepository.save(link);
+            recipe.getRecipeTag().add(link); // 양방향 동기화
+        }
+    }
+
+    //    레시피별 태그 조회
     public List<RecipeTagDto> getTagByRecipeUuid(String recipeUuid) {
         List<RecipeTag> recipeTags = recipeTagRepository.findByRecipesUuid(recipeUuid);
         return recipeMapStruct.toRecipeTagDtoList(recipeTags);
     }
 }
+
+
+

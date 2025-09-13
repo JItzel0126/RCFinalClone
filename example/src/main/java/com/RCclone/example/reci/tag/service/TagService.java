@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,15 +20,35 @@ public class TagService {
     private final ErrorMsg errorMsg;
 
 //    태그 저장(신규 + 재사용)
-    public Tag saveOrGetTag(String tag){
-        return tagRepository.findByTagIgnoreCaseAndDeletedFalse(tag)
-                .orElseGet(()->{
-                    Tag newTag = new Tag();
-                    newTag.setTag(tag);
-                    newTag.setDeleted(false);
-                    return tagRepository.save(newTag);
-                });
+    public Tag saveOrGetTag(String rawtag){
+
+        String key = normalize(rawtag);
+
+        // 삭제여부 상관없이 먼저 찾기 (대소문자 무시)
+        Optional<Tag> opt = tagRepository.findByTagIgnoreCase(key);
+
+        if (opt.isPresent()) {
+            Tag tag = opt.get();
+            if (tag.isDeleted()) {
+                tag.setDeleted(false);       // ✅ 재활성화
+                return tagRepository.save(tag);
+            }
+            return tag;                      // ✅ 기존 거 재사용
+        }
+
+        // 없으면 새로 생성
+        Tag newTag = new Tag();
+        newTag.setTag(key);
+        newTag.setDeleted(false);
+        return tagRepository.save(newTag);
     }
+
+    private String normalize(String s) {
+        if (s == null) return "";
+        // 공백 정리 + 대소문자 통일(영문 대비)
+        return s.trim().replaceAll("\\s+", " ").toLowerCase();
+    }
+
 
 //    태그 전체 조회
     public List<TagDto> getAllTags(){

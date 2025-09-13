@@ -23,5 +23,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     //    중복여부 boolean 체크용
     boolean existsByTag(String tag);
 
+    // 삭제 여부 무시하고 한 방에 찾기 (대소문자 무시)
+    Optional<Tag> findByTagIgnoreCase(String tag);
+
 
 }

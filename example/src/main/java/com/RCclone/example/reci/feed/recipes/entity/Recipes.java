@@ -51,6 +51,7 @@ public class Recipes extends BaseTimeEntity {
        🔹 양방향 매핑 (태그만)
        ========================== */
     @OneToMany(mappedBy = "recipes", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<RecipeTag> recipeTag = new ArrayList<>();
 
      /* ==========================

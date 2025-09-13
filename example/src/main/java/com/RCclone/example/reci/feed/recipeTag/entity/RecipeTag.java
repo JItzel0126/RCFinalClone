@@ -21,6 +21,7 @@ public class RecipeTag extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uuid")
+    @ToString.Exclude
     private Recipes recipes;                // fk
 
     @ManyToOne(fetch = FetchType.LAZY)

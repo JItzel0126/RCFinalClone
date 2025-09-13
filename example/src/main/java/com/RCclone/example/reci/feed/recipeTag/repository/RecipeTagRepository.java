@@ -4,6 +4,9 @@ import com.RCclone.example.reci.feed.recipeTag.entity.RecipeTag;
 import com.RCclone.example.reci.feed.recipes.entity.Recipes;
 import com.RCclone.example.reci.tag.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +19,8 @@ public interface RecipeTagRepository extends JpaRepository<RecipeTag, Long> {
 
 //    존재하는 태그 확인
     boolean existsByRecipesAndTag(Recipes recipes, Tag tag);
+
+    @Modifying
+    @Query("delete from RecipeTag rt where rt.recipes.uuid = :uuid")
+    void deleteByRecipesUuid(@Param("uuid") String uuid);
 }
