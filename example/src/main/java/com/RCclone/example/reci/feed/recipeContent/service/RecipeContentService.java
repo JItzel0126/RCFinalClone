@@ -5,6 +5,7 @@ import com.RCclone.example.common.RecipeMapStruct;
 import com.RCclone.example.reci.feed.recipeContent.dto.RecipeContentDto;
 import com.RCclone.example.reci.feed.recipeContent.entity.RecipeContent;
 import com.RCclone.example.reci.feed.recipeContent.repository.RecipeContentRepository;
+import com.RCclone.example.reci.feed.recipes.dto.RecipesDto;
 import com.RCclone.example.reci.feed.recipes.entity.Recipes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class RecipeContentService {
             throw new RuntimeException(errorMsg.getMessage("errors.not.found"));
         }
         return recipeMapStruct.toRecipeContentDtoList(contents);
+    }
+
+    public RecipeContent findById(Long stepId) {
+        return recipeContentRepository.findById(stepId)
+                .orElseThrow(()-> new RuntimeException(errorMsg.getMessage("errors.not.found")));
     }
 
     /* ==========================

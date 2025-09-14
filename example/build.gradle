@@ -34,6 +34,8 @@ dependencies {
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 🔥 DevTools
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	//    TODO: junit 테스트 시 lombok 추가
 	testAnnotationProcessor 'org.projectlombok:lombok'

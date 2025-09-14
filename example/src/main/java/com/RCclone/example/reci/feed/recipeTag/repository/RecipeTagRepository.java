@@ -20,7 +20,15 @@ public interface RecipeTagRepository extends JpaRepository<RecipeTag, Long> {
 //    존재하는 태그 확인
     boolean existsByRecipesAndTag(Recipes recipes, Tag tag);
 
+//
+    boolean existsByTag(Tag tag);
+
+    @Query("select distinct rt.tag.tagId from RecipeTag rt")
+    List<Long> findAllTagIdsInUse();
+
+//    삭제
     @Modifying
     @Query("delete from RecipeTag rt where rt.recipes.uuid = :uuid")
     void deleteByRecipesUuid(@Param("uuid") String uuid);
+
 }

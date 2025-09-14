@@ -33,12 +33,15 @@ public class Recipes extends BaseTimeEntity {
     @Lob
     private byte[] thumbnail;
     private String thumbnailUrl;
+    private String recipeType;
+    private String videoUrl;
+    private String videoText;
 
     private String postStatus;                 // 공개여부
-    private Long viewCount = 0L;               // 조회수
-    private Long likeCount = 0L;               // 좋아요
-    private Long reportCount = 0L;             // 신고수
-    private Long commentCount = 0L;            // 댓글수
+    private Long viewCount;               // 조회수
+    private Long likeCount;               // 좋아요
+    private Long reportCount;             // 신고수
+    private Long commentCount;            // 댓글수
 
     private String difficulty;                  // 난이도
 

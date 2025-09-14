@@ -15,6 +15,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     // 삭제 안 된 재료만 조회
     List<Ingredient> findByRecipesUuidAndDeletedFalseOrderBySortOrderAsc(String uuid);
 
+    // 삭제
     @Modifying
     @Query("delete from Ingredient i where i.recipes.uuid = :uuid")
     void deleteByRecipesUuid(@Param("uuid") String uuid);

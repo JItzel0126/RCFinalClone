@@ -1,0 +1,31 @@
+-- dev@local 없으면 넣기
+INSERT INTO USERS (
+    USER_EMAIL, USER_ID, NICKNAME, PASSWORD,
+    USER_LOCATION, USER_INTRODUCE, USER_WEBSITE,
+    USER_INSTA, USER_YOUTUBE, USER_BLOG, USER_INTEREST_TAG,
+    PROFILE_STATUS, PROFILE_IMAGE_URL, PROFILE_IMAGE
+)
+SELECT
+    'dev@local', 'devuser', 'Dev', '{noop}pass',
+    'Seoul', '개발용 계정입니다', NULL,
+    NULL, NULL, NULL, '요리,코딩',
+    'ACTIVE', NULL, NULL
+    WHERE NOT EXISTS (
+  SELECT 1 FROM USERS WHERE USER_EMAIL = 'dev@local'
+);
+
+-- anonymous@local 없으면 넣기
+INSERT INTO USERS (
+    USER_EMAIL, USER_ID, NICKNAME, PASSWORD,
+    USER_LOCATION, USER_INTRODUCE, USER_WEBSITE,
+    USER_INSTA, USER_YOUTUBE, USER_BLOG, USER_INTEREST_TAG,
+    PROFILE_STATUS, PROFILE_IMAGE_URL, PROFILE_IMAGE
+)
+SELECT
+    'anonymous@local', 'anon', 'Anonymous', '{noop}pass',
+    'Nowhere', '테스트용 계정입니다', NULL,
+    NULL, NULL, NULL, '요리',
+    'INACTIVE', NULL, NULL
+    WHERE NOT EXISTS (
+  SELECT 1 FROM USERS WHERE USER_EMAIL = 'anonymous@local'
+);

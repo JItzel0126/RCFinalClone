@@ -8,6 +8,7 @@ import com.RCclone.example.reci.feed.recipeTag.repository.RecipeTagRepository;
 import com.RCclone.example.reci.feed.recipes.entity.Recipes;
 import com.RCclone.example.reci.tag.dto.TagDto;
 import com.RCclone.example.reci.tag.entity.Tag;
+import com.RCclone.example.reci.tag.repository.TagRepository;
 import com.RCclone.example.reci.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecipeTagService {
     private final RecipeTagRepository recipeTagRepository;
+    private final TagRepository tagRepository;
     private final RecipeMapStruct recipeMapStruct;
     private final TagService tagService;
     private final ErrorMsg errorMsg;
@@ -57,6 +59,18 @@ public class RecipeTagService {
             link.setTag(tag);
             recipeTagRepository.save(link);
             recipe.getRecipeTag().add(link); // 양방향 동기화
+        }
+    }
+
+    //  RecipeTagService 쪽에 연결 끊긴 태그 처리 로직 추가
+    public void cleanupUnusedTags() {
+        List<Long> inUseIds = recipeTagRepository.findAllTagIdsInUse();
+        List<Tag> allTags = tagRepository.findAll();
+        for (Tag tag : allTags) {
+            if (!inUseIds.contains(tag.getTagId()) && !tag.isDeleted()) {
+                tag.setDeleted(true);
+                tagRepository.save(tag);
+            }
         }
     }
 

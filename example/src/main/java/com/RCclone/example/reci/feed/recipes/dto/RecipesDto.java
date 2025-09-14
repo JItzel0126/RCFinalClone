@@ -18,6 +18,7 @@ public class RecipesDto {
 
     private String uuid;            // PK
     private String userEmail;       // member FK
+    private String userId;
     private String recipeTitle;
     private String recipeIntro;
     private String recipeCategory;
@@ -25,6 +26,9 @@ public class RecipesDto {
     private String difficulty;
     private Long cookingTime;
     private String thumbnailUrl;
+    private String recipeType;
+    private String videoUrl;
+    private String videoText;
 
 //    배열 조회
     private List<RecipeContentDto> contents;
@@ -50,7 +54,9 @@ public class RecipesDto {
                       Long commentCount,
                       String postStatus,
                       List<TagDto> tags,
-                      LocalDateTime insertTime) {
+                      LocalDateTime insertTime,
+                      String recipeType,
+                      String videoUrl) {
         this.uuid = uuid;
         this.recipeTitle = recipeTitle;
         this.userEmail = userEmail;
@@ -60,6 +66,8 @@ public class RecipesDto {
         this.commentCount = commentCount;
         this.postStatus = postStatus;
         this.tags = tags;
+        this.recipeType = recipeType;
+        this.videoUrl = videoUrl;
     }
 
     /* ==========================
@@ -68,6 +76,7 @@ public class RecipesDto {
      ========================== */
     public RecipesDto(String uuid,
                       String userEmail,
+                      String userId,
                       String recipeTitle,
                       String recipeIntro,
                       String recipeCategory,
@@ -80,10 +89,14 @@ public class RecipesDto {
                       Long viewCount,
                       Long likeCount,
                       Long commentCount,
+                      String recipeType,
+                      String videoUrl,
+                      String videoText,
                       LocalDateTime insertTime,
                       LocalDateTime updateTime) {
         this.uuid = uuid;
         this.userEmail = userEmail;
+        this.userId = userId;
         this.recipeTitle = recipeTitle;
         this.recipeIntro = recipeIntro;
         this.recipeCategory = recipeCategory;
@@ -98,6 +111,9 @@ public class RecipesDto {
         this.insertTime = insertTime;
         this.updateTime = updateTime;
         this.tags = tags;
+        this.recipeType = recipeType;
+        this.videoUrl = videoUrl;
+        this.videoText = videoText;
     }
 
     /* ==========================
@@ -112,7 +128,10 @@ public class RecipesDto {
                       Long cookingTime,
                       List<RecipeContentDto> contents,
                       List<IngredientDto> ingredients,
-                      List<TagDto> tags) {
+                      List<TagDto> tags,
+                      String recipeType,
+                      String videoUrl,
+                      String videoText) {
 
         this.recipeTitle = recipeTitle;
         this.recipeIntro = recipeIntro;
@@ -123,5 +142,8 @@ public class RecipesDto {
         this.contents = contents;
         this.ingredients = ingredients;
         this.tags = tags;
+        this.recipeType = recipeType;
+        this.videoUrl = videoUrl;
+        this.videoText = videoText;
     }
 }
