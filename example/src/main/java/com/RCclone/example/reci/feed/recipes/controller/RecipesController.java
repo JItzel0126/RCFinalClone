@@ -107,15 +107,98 @@ public class RecipesController {
         // 서비스에서 DTO로 가져와 뷰에 그대로 바인딩
         RecipesDto dto = recipesService.getRecipeDetails(uuid); // 서비스에 맞게 메서드명 조정
 
+        // 업로드 시간 문자열
         String insertTime = "";
         if (dto.getInsertTime() != null) {
             insertTime = dto.getInsertTime()
                     .format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
         }
 
+        // 이미지 영상 분기 + 임베드 url 만들기
+        boolean isVideo = "VIDEO".equalsIgnoreCase(dto.getRecipeType());
+        String embedUrl = null;
+        if (isVideo && dto.getVideoUrl() != null && !dto.getVideoUrl().isBlank()) {
+            embedUrl = toYoutubeEmbed(dto.getVideoUrl()); // 유튜브면 embed로 변환
+            if (embedUrl == null) {
+                // 유튜브가 아니면 일단 원본 URL로 시도 (일부 사이트는 X-Frame-Options로 막힐 수 있음)
+                embedUrl = dto.getVideoUrl();
+            }
+        }
+
+
         model.addAttribute("recipe", dto);
+        model.addAttribute("embedUrl", embedUrl);
+        model.addAttribute("isVideo", isVideo);
         model.addAttribute("insertTime", insertTime);
         return "feed/recipe_details"; // JSP 경로
+    }
+
+    private String toYoutubeEmbed(String url){
+        try {
+            java.net.URL u = new java.net.URL(url);
+            String host = u.getHost();
+            String path = u.getPath();
+            String q = u.getQuery(); // v=, t= 같은 파라미터
+
+            // youtu.be/VIDEOID
+            if (host.contains("youtu.be")) {
+                String id = path.replaceFirst("^/", "");
+                String start = parseStartSeconds(q);
+                return start == null
+                        ? "https://www.youtube.com/embed/" + id
+                        : "https://www.youtube.com/embed/" + id + "?start=" + start;
+            }
+            // youtube.com/watch?v=VIDEOID
+            if (host.contains("youtube.com")) {
+                java.util.Map<String,String> params = splitQuery(q);
+                String id = params.get("v");
+                if (id != null && !id.isBlank()) {
+                    String start = parseStartSeconds(q);
+                    return start == null
+                            ? "https://www.youtube.com/embed/" + id
+                            : "https://www.youtube.com/embed/" + id + "?start=" + start;
+                }
+                // shorts/VIDEOID
+                if (path.startsWith("/shorts/")) {
+                    String ids = path.substring("/shorts/".length());
+                    return "https://www.youtube.com/embed/" + ids;
+                }
+                // 재생목록
+                if (path.startsWith("/playlist")) {
+                    String list = splitQuery(q).get("list");
+                    if (list != null) return "https://www.youtube.com/embed/videoseries?list=" + list;
+                }
+            }
+        } catch (Exception ignore) {}
+        return null;
+    }
+
+    private java.util.Map<String,String> splitQuery(String query) {
+        java.util.Map<String,String> map = new java.util.HashMap<>();
+        if (query == null) return map;
+        for (String p : query.split("&")) {
+            int i = p.indexOf('=');
+            if (i > 0) map.put(p.substring(0, i), p.substring(i+1));
+        }
+        return map;
+    }
+
+    private String parseStartSeconds(String query) {
+        if (query == null) return null;
+        // t=1m30s / t=90s / start=90 지원
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:(?:^|&)t=([^&]+))|(?:^|&)start=(\\d+)").matcher(query);
+        if (!m.find()) return null;
+        String t = m.group(1) != null ? m.group(1) : m.group(2);
+        if (t == null) return null;
+        if (t.matches("\\d+")) return t; // 초
+        int secs = 0;
+        java.util.regex.Matcher mh = java.util.regex.Pattern.compile("(\\d+)h").matcher(t);
+        java.util.regex.Matcher mm = java.util.regex.Pattern.compile("(\\d+)m").matcher(t);
+        java.util.regex.Matcher ms = java.util.regex.Pattern.compile("(\\d+)s").matcher(t);
+        if (mh.find()) secs += Integer.parseInt(mh.group(1)) * 3600;
+        if (mm.find()) secs += Integer.parseInt(mm.group(1)) * 60;
+        if (ms.find()) secs += Integer.parseInt(ms.group(1));
+        return secs > 0 ? String.valueOf(secs) : null;
     }
 
 }

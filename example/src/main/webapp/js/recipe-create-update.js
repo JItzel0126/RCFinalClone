@@ -4,18 +4,83 @@
     const $ = (s, el = document) => el.querySelector(s);
     const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
+        // ✅ 먼저 모두 선언
+        const tagList = $('#tagList');
+        const tagHidden = $('#tagHidden');
+        const steps = $('#steps');
+        const isPublic = $('#isPublic');
+        const postStatus = $('#postStatus');
+        const recipeTypeInput = $('#recipeType');
+        const tabImage = $('#tabImage');
+        const tabVideo = $('#tabVideo');
+        const imagePane = $('#imagePane');
+        const videoPane = $('#videoPane');
 
-    const form = $('#recipeForm');
-    const tagList = $('#tagList');
-    const tagHidden = $('#tagHidden');
-    const steps = $('#steps');
-    const isPublic = $('#isPublic');
-    const postStatus = $('#postStatus');
-    const recipeTypeInput = $('#recipeType');
-    const tabImage = $('#tabImage');
-    const tabVideo = $('#tabVideo');
-    const imagePane = $('#imagePane');
-    const videoPane = $('#videoPane');
+        // 🔥 여기서 먼저 선언해야 ReferenceError 안 남
+        const videoUrl = $('#videoUrl');
+        const videoPreview = $('#videoPreview');
+
+        // 썸네일/프리뷰 영역
+        const videoThumbBox = $('#videoThumbBox');
+        const videoThumbFrame = $('#videoThumbFrame');
+        const thumbBox = $('#thumbBox');
+
+        // YouTube 파싱/임베드
+        function parseYouTube(url){
+            try{
+                const u = new URL((url||'').trim());
+                if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+                if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
+            }catch(e){}
+            return null;
+        }
+        function toEmbed(url){
+            const id = parseYouTube(url);
+            return id ? `https://www.youtube.com/embed/${id}` : '';
+        }
+        function updateVideoPreview(){
+            const em = toEmbed(videoUrl?.value);
+            // 상단 썸네일 자리 프리뷰
+            if (em) videoThumbFrame.src = em; else videoThumbFrame.removeAttribute('src');
+            // 하단 입력 폼 프리뷰
+            if (em) videoPreview.src = em; else videoPreview.removeAttribute('src');
+        }
+
+        // 🔧 타입 전환(단일 정의)
+        function setRecipeType(type){
+            const isImg = String(type).toUpperCase() === 'IMAGE';
+            recipeTypeInput.value = isImg ? 'IMAGE' : 'VIDEO';
+
+            // 탭 상태
+            tabImage.classList.toggle('is-active', isImg);
+            tabImage.setAttribute('aria-selected', String(isImg));
+            tabVideo.classList.toggle('is-active', !isImg);
+            tabVideo.setAttribute('aria-selected', String(!isImg));
+
+            // Pane 토글
+            imagePane.classList.toggle('hidden', !isImg);
+            imagePane.setAttribute('aria-hidden', String(!isImg));
+            videoPane.classList.toggle('hidden', isImg);
+            videoPane.setAttribute('aria-hidden', String(isImg));
+
+            // 대표영역 토글(썸네일 vs iframe)
+            thumbBox.classList.toggle('hidden', !isImg);
+            videoThumbBox.classList.toggle('hidden', isImg);
+            videoThumbBox.setAttribute('aria-hidden', String(isImg));
+
+            if (!isImg) updateVideoPreview();
+        }
+
+        // 이벤트 바인딩
+        tabImage?.addEventListener('click', (e)=>{ e.preventDefault(); setRecipeType('IMAGE'); });
+        tabVideo?.addEventListener('click', (e)=>{ e.preventDefault(); setRecipeType('VIDEO'); });
+        videoUrl?.addEventListener('input', updateVideoPreview);
+
+        // 초기 타입 반영
+        setRecipeType(recipeTypeInput.value || 'IMAGE');
+        updateVideoPreview();
+
+
 
         // ===== 썸네일 미리보기 =====
         $('#thumb')?.addEventListener('change', (e) => {
@@ -239,8 +304,7 @@
 
 
 // 동영상 미리보기 (YouTube만 자동)
-        const videoUrl = $('#videoUrl');
-        const videoPreview = $('#videoPreview');
+
         function updateVideoPreview(){
             const url = (videoUrl?.value||'').trim();
             if (!url){ videoPreview.removeAttribute('src'); return; }
@@ -262,25 +326,35 @@
 
         // ===== 제출 동작 (뷰 렌더링) =====
         function finalizeAndSubmit(){
-// ingredients/steps/tag hidden 동기화
-            renumberIngredients();
-            renumberSteps();
-            syncTagHidden();
-            form.submit();
+            // 폼을 여기서 직접 찾자 (스코프/로드 순서 이슈 방지)
+            const f = document.getElementById('recipeForm');
+            if(!f){ console.error('[recipe] form(#recipeForm) not found'); return; }
+
+            // 필요한 동기화가 있으면 안전하게 호출
+            if (typeof renumberIngredients === 'function') renumberIngredients();
+            if (typeof renumberSteps === 'function') renumberSteps();
+            if (typeof syncTagHidden === 'function') syncTagHidden();
+
+            // 네이티브 검증을 쓰고 싶으면 requestSubmit, 아니면 submit
+            if (typeof f.requestSubmit === 'function') f.requestSubmit();
+            else f.submit();
         }
+
         $('#publish')?.addEventListener('click', ()=>{
+            const isPublic = document.getElementById('isPublic');
+            const postStatus = document.getElementById('postStatus');
             postStatus.value = isPublic?.checked ? 'PUBLIC' : 'PRIVATE';
             finalizeAndSubmit();
         });
         $('#saveDraft')?.addEventListener('click', ()=>{
-            postStatus.value = 'DRAFT';
+            document.getElementById('postStatus').value = 'DRAFT';
             finalizeAndSubmit();
         });
-        $('#btnCancel')?.addEventListener('click', ()=> history.back());
+        // $('#btnCancel')?.addEventListener('click', ()=> history.back());
 
 
 // 페이지 진입 시 버튼 상태 보정
-        renumberIngredients();
-        renumberSteps();
-        updateVideoPreview();
+         // renumberIngredients();
+//         renumberSteps();
+//         updateVideoPreview();
     })();

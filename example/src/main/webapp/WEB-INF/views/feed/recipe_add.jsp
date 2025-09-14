@@ -81,19 +81,45 @@
                 <article class="card p-16">
                     <h3 style="margin:0 0 8px; font-weight:800">대표 이미지</h3>
                     <div class="thumb-uploader">
-                        <label class="thumb">
+                        <%-- 이미지모드 섬네일 --%>
+                        <label class="thumb" id="thumbBox">
                             <input id="thumb" name="thumbnail" type="file" accept="image/*" />
                             <span class="ph <c:if test='${not empty recipe.thumbnailUrl}'>hidden</c:if>'">썸네일을 업로드하세요</span>
                             <img id="thumbPreview" alt=""
                                  class="<c:if test='${empty recipe.thumbnailUrl}'>hidden</c:if>"
                                  <c:if test='${not empty recipe.thumbnailUrl}'>src='${recipe.thumbnailUrl}'</c:if> />
                         </label>
+
+                            <!-- VIDEO 모드일 때 썸네일 자리에 뜨는 프리뷰 -->
+                            <div id="videoThumbBox" class="ratio-16x9 hidden" aria-hidden="true">
+                                <iframe id="videoThumbFrame" title="동영상 미리보기" allowfullscreen
+                                        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+
+
                         <div class="meta-row">
                             <input class="input" id="title" name="recipeTitle" maxlength="80"
                                    value="<c:out value='${recipe.recipeTitle}'/>" placeholder="레시피 제목"/>
                             <input class="input" id="subtitle" name="recipeIntro"
                                    value="<c:out value='${recipe.recipeIntro}'/>" placeholder="간단 설명 (선택)"/>
                         </div>
+                    </div>
+                </article>
+
+                <!-- 동영상 레시피 Pane -->
+                <article class="card p-16 hidden" id="videoPane" aria-hidden="true">
+                    <h3 style="margin:0 0 12px; font-weight:800">동영상 레시피</h3>
+                    <div class="video-form">
+                        <input class="input" id="videoUrl" name="videoUrl"
+                               value="<c:out value='${recipe.videoUrl}'/>"
+                               placeholder="동영상 URL을 붙여넣기 (예: https://youtu.be/VIDEO_ID)" />
+                        <div class="video-preview" id="videoPreviewWrap">
+                            <div class="ratio-16x9">
+                                <iframe id="videoPreview" title="동영상 미리보기" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+                            <p class="muted small" id="videoHint">YouTube 링크는 자동으로 미리보기가 보여요. 기타 플랫폼은 임베드 허용 여부에 따라 미리보기가 제한될 수 있어요.</p>
+                        </div>
+                        <textarea class="input" id="videoText" name="videoText" placeholder="설명(예: 조리 포인트, 대체 재료, 주의사항 등)"><c:out value='${recipe.videoText}'/></textarea>
                     </div>
                 </article>
 
@@ -278,22 +304,6 @@
                     </div>
                 </article>
 
-<!-- 동영상 레시피 Pane -->
-<article class="card p-16 hidden" id="videoPane" aria-hidden="true">
-    <h3 style="margin:0 0 12px; font-weight:800">동영상 레시피</h3>
-    <div class="video-form">
-        <input class="input" id="videoUrl" name="videoUrl"
-               value="<c:out value='${recipe.videoUrl}'/>"
-               placeholder="동영상 URL을 붙여넣기 (예: https://youtu.be/VIDEO_ID)" />
-        <div class="video-preview" id="videoPreviewWrap">
-            <div class="ratio-16x9">
-                <iframe id="videoPreview" title="동영상 미리보기" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-            </div>
-            <p class="muted small" id="videoHint">YouTube 링크는 자동으로 미리보기가 보여요. 기타 플랫폼은 임베드 허용 여부에 따라 미리보기가 제한될 수 있어요.</p>
-        </div>
-        <textarea class="input" id="videoText" name="videoText" placeholder="설명(예: 조리 포인트, 대체 재료, 주의사항 등)"><c:out value='${recipe.videoText}'/></textarea>
-    </div>
-</article>
 </main>
 
 

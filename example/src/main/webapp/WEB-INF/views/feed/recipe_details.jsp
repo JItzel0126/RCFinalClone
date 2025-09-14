@@ -68,37 +68,45 @@
                     </div>
                 </div>
 
-                <!-- 이미지/텍스트 슬라이드 -->
+                    <!-- 메인 비주얼 영역 -->
+        <c:choose>
+            <c:when test="${isVideo}">
+                 <div class="ratio-16x9 mb-12">
+                     <iframe src="${embedUrl}" allowfullscreen
+                             referrerpolicy="strict-origin-when-cross-origin"
+                             style="width:100%;height:100%;border:0"></iframe>
+                 </div>
+            </c:when>
+            <c:otherwise>
+                    <!-- 이미지/텍스트 슬라이드 -->
                 <div class="step-slider mb-12">
                     <div class="slides" id="imgSlides">
-                        <c:choose>
-                            <c:when test="${not empty recipe.contents}">
-                                <c:forEach var="c" items="${recipe.contents}">
-                                    <c:set var="imgSrc" value="${c.recipeImageUrl}"/>
-                                    <c:if test="${fn:startsWith(imgSrc, '/')}">
-                                        <c:set var="imgSrc" value="${ctx}${imgSrc}"/>
+                        <c:forEach var="c" items="${recipe.contents}">
+                               <c:set var="imgSrc" value="${c.recipeImageUrl}"/>
+                                     <c:if test="${fn:startsWith(imgSrc, '/')}">
+                                         <c:set var="imgSrc" value="${ctx}${imgSrc}"/>
                                     </c:if>
-                                    <div class="slide"><img src="${imgSrc}" alt="" /></div>
-                                </c:forEach>
-<%--                                <c:forEach var="c" items="${recipe.contents}">--%>
-<%--                                    <div class="slide">--%>
-<%--                                        <img src="<c:out value='${c.recipeImageUrl}'/>" alt="" />--%>
-<%--                                    </div>--%>
-<%--                                </c:forEach>--%>
-                            </c:when>
-                            <c:otherwise>
-                                <!-- 컨텐츠 이미지 없으면 썸네일/플레이스홀더 -->
-                                <div class="slide">
-                                    <img src="<c:out value='${empty recipe.thumbnailUrl ? (ctx += "https://placehold.co/600x400") : recipe.thumbnailUrl}'/>" alt="" />
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
+                               <div class="slide"><img src="${imgSrc}" alt="" /></div>
+                        </c:forEach>
+                        <!-- 컨텐츠 이미지 없으면 썸네일/플레이스홀더 -->
+                        <div class="slide">
+                            <c:set var="thumbSrc" value="${recipe.thumbnailUrl}"/>
+                            <c:if test="${fn:startsWith(thumbSrc, '/')}">
+                                <c:set var="thumbSrc" value="${ctx}${thumbSrc}"/>
+                            </c:if>
+                            <c:if test="${empty thumbSrc}">
+                                <c:set var="thumbSrc" value="https://placehold.co/600x400"/>
+                            </c:if>
+                            <img src="${thumbSrc}" alt="대표 이미지"/>
+                        </div>
                     </div>
-
                     <button class="prev" type="button" aria-label="이전">◀</button>
                     <button class="next" type="button" aria-label="다음">▶</button>
                 </div>
-
+            </c:otherwise>
+        </c:choose>
+            <!-- 조리 순서: VIDEO면 숨김 -->
+            <c:if test="${not isVideo}">
                 <aside class="panel mb-12">
                     <h3>👣 조리 순서</h3>
                     <div id="textPanel">
@@ -120,7 +128,7 @@
                         </div>
                     </div>
                 </aside>
-
+            </c:if>
                 <aside class="panel">
                     <h3>🧾 재료</h3>
                     <ul class="grid">
